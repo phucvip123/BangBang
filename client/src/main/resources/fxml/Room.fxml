@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="com.shot_tank.controller.RoomController">
+
+    <!-- Nội dung chính -->
+    <VBox alignment="CENTER"
+        spacing="15"
+        fx:id="rootVBox"
+        style="-fx-padding: 20;">
+        <Label fx:id="txtRoomName" text="Room Name"
+            style="-fx-font-size: 20px;
+              -fx-font-weight: bold;
+              -fx-text-fill: #2c3e50;
+              -fx-padding: 10;
+              -fx-background-color: linear-gradient(to right, #3498db, #2ecc71);
+              -fx-background-radius: 10;
+              -fx-text-fill: white;" />
+
+        <HBox fx:id="listPlayers" spacing="20" alignment="CENTER" />
+    </VBox>
+    <Button text="Rời phòng"
+        onAction="#leaveRoom"
+        style="-fx-background-color: red; 
+               -fx-text-fill: white; 
+               -fx-font-weight: bold;"
+        StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
+            <Insets top="10" right="10" bottom="0" left="0" />
+        </StackPane.margin>
+    </Button>
+
+    <Label fx:id="txtDescription" text="Số người trong phòng: " StackPane.alignment="TOP_LEFT">
+        <StackPane.margin>
+            <Insets top="10" right="0" bottom="0" left="10" />
+        </StackPane.margin>
+    </Label>
+</StackPane>

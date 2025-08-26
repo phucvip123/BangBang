@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+
+<Pane fx:id="gamePane"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.shot_tank.controller.BattleController"
+      prefWidth="800" prefHeight="600"
+      style="-fx-background-color: black;">
+</Pane>
