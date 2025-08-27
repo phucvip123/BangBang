@@ -21,13 +21,14 @@ public class HandleMessage {
         Service.gI().sendCreatePlayer(player);
     }
 
-    public void createRoom(Player player, String roomName,int maxMembers) {
+    public void createRoom(Player player, String roomName, int maxMembers) {
         if (player.room != null) {
             Service.gI().sendNotificationis(player, "Cảnh báo", "Hãy rời phòng trước khi tạo mới!");
             return;
         }
-        if(maxMembers<=0 || maxMembers > ConfigLoader.gI().getMaxMembersInRoom()) {
-            Service.gI().sendNotificationis(player, "Cảnh báo", "Số lượng thành viên tối đa là " + ConfigLoader.gI().getMaxMembersInRoom());
+        if (maxMembers <= 0 || maxMembers > ConfigLoader.gI().getMaxMembersInRoom()) {
+            Service.gI().sendNotificationis(player, "Cảnh báo",
+                    "Số lượng thành viên tối đa là " + ConfigLoader.gI().getMaxMembersInRoom());
             return;
         }
         Room room = new Room(roomName);
@@ -76,11 +77,29 @@ public class HandleMessage {
         for (Player p : player.room.players) {
             Service.gI().sendRoom(p);
         }
-        
+
     }
 
-    public void startGame(Player player){
-
+    public void startGame(Player player) {
+        if (player.room == null) {
+            Service.gI().sendNotificationis(player, "Cảnh báo",
+                    "Hãy tham gia phòng trước khi bắt đầu trò chơi!");
+            return;
+        }
+        if (player.room.owner != player) {
+            Service.gI().sendNotificationis(player, "Cảnh báo",
+                    "Chỉ chủ phòng mới có thể bắt đầu trò chơi!");
+            return;
+        }
+        boolean allReady = player.room.players.stream().allMatch(p -> p.isReady);
+        if (!allReady) {
+            Service.gI().sendNotificationis(player, "Cảnh báo",
+                    "Tất cả thành viên trong phòng phải sẵn sàng!");
+            return;
+        }
+        for (Player p : player.room.players) {
+            Service.gI().sendStartGame(p);
+        }
     }
 
     public void playerMove(Player player, int x, int y) {
@@ -90,7 +109,5 @@ public class HandleMessage {
         player.location.x = x;
         player.location.y = y;
     }
-
-
 
 }

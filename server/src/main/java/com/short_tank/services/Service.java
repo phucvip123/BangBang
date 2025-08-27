@@ -102,5 +102,13 @@ public class Service {
         } catch (Exception e) {
         }
     }
-
+    public void sendStartGame(Player player) {
+        try {
+            Message msg = new Message((byte) 6);
+            player.session.sendMessage(msg);
+            msg.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

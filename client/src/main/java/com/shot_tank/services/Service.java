@@ -91,5 +91,8 @@ public class Service {
             e.printStackTrace();
         }
     }
+    public void sendMove(){
+        
+    }
 
 }
