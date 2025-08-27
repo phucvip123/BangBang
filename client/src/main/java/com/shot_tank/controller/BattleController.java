@@ -1,17 +1,9 @@
 package com.shot_tank.controller;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-
+import java.util.*;
 import com.shot_tank.models.Player;
 import com.shot_tank.models.Tank;
-import com.shot_tank.services.Service;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -20,29 +12,47 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 public class BattleController implements Initializable {
-    public static List<Player> players = new ArrayList<>();
+    public static final double MAP_WIDTH = 1600;
+    public static final double MAP_HEIGHT = 1600;
+
     @FXML
     private Pane gamePane;
 
     private Tank playerTank;
-
+    private Rectangle mapBorder;
     private final Set<KeyCode> keysPressed = new HashSet<>();
     private final List<Circle> bullets = new ArrayList<>();
     private double mouseX, mouseY;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Rectangle mapBackground = new Rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT);
+        mapBackground.setFill(new LinearGradient(
+            0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+            new Stop(0, Color.web("#2c3e50")),
+            new Stop(1, Color.web("#27ae60"))
+        ));
+        gamePane.getChildren().add(mapBackground);
+
+        mapBorder = new Rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT);
+        mapBorder.setFill(Color.TRANSPARENT);
+        mapBorder.setStroke(Color.WHITE);
+        mapBorder.setStrokeWidth(6);
+        mapBorder.setArcWidth(30);
+        mapBorder.setArcHeight(30);
+        gamePane.getChildren().add(mapBorder);
+
         playerTank = new Tank(gamePane, Player.myChar().location.x, Player.myChar().location.x, Player.myChar().size,
                 Player.myChar().name, Player.myChar().hp, Player.myChar().hpMax);
         Player.myChar().tank = playerTank;
-        for (int i = 0; i < players.size(); i++) {
-            Tank enemyTank = new Tank(gamePane, players.get(i).location.x, players.get(i).location.y, players.get(i).size,
-                    players.get(i).name, players.get(i).hp, players.get(i).hpMax);
-            players.get(i).tank = enemyTank;
-        }
+
         gamePane.setOnMouseMoved(e -> {
             mouseX = e.getX();
             mouseY = e.getY();
@@ -65,20 +75,29 @@ public class BattleController implements Initializable {
             public void handle(long now) {
                 moveTank();
                 playerTank.rotateBarrel(mouseX, mouseY);
-                double angle = playerTank.getAngle();
-                if(Math.abs(angle - Player.myChar().location.angle) >= 5){
-                    Player.myChar().location.angle = angle;
-                    // Service.gI().sendAngle(angle);
-                }
-                playerTank.updateBullets();
-                for(int i=0;i<players.size();i++){
-                    players.get(i).tank.updateBullets();
-                }
+                updateBullets();
+                updateCamera();
             }
         };
         timer.start();
     }
 
+    private void updateCamera() {
+        double centerX = playerTank.getCenterX();
+        double centerY = playerTank.getCenterY();
+
+        double paneWidth = gamePane.getWidth();
+        double paneHeight = gamePane.getHeight();
+
+        double offsetX = paneWidth / 2 - centerX;
+        double offsetY = paneHeight / 2 - centerY;
+
+        offsetX = Math.min(0, Math.max(offsetX, paneWidth - MAP_WIDTH));
+        offsetY = Math.min(0, Math.max(offsetY, paneHeight - MAP_HEIGHT));
+
+        gamePane.setTranslateX(offsetX);
+        gamePane.setTranslateY(offsetY);
+    }
 
     private void moveTank() {
         double dx = 0, dy = 0;
@@ -99,19 +118,12 @@ public class BattleController implements Initializable {
         double newX = playerTank.getBody().getTranslateX() + dx;
         double newY = playerTank.getBody().getTranslateY() + dy;
 
-        double paneWidth = gamePane.getWidth();
-        double paneHeight = gamePane.getHeight();
         double size = playerTank.getBody().getWidth();
 
-        newX = Math.max(0, Math.min(newX, paneWidth - size));
-        newY = Math.max(0, Math.min(newY, paneHeight - size));
+        newX = Math.max(0, Math.min(newX, MAP_WIDTH - size));
+        newY = Math.max(0, Math.min(newY, MAP_HEIGHT - size));
 
         playerTank.setPosition(newX, newY);
-        if (Player.myChar().location.x != (int)newX || Player.myChar().location.y != (int)newY) {
-            Player.myChar().location.x = (int)newX;
-            Player.myChar().location.y = (int)newY;
-            com.shot_tank.services.Service.gI().sendMove((int)newX, (int)newY);
-        }
     }
 
     private void shoot() {
@@ -123,7 +135,7 @@ public class BattleController implements Initializable {
 
         double dx = mouseX - centerX;
         double dy = mouseY - centerY;
-        
+
         double length = Math.sqrt(dx * dx + dy * dy);
         bullet.setUserData(new double[] { dx / length * 5, dy / length * 5 });
 
@@ -139,8 +151,8 @@ public class BattleController implements Initializable {
             bullet.setTranslateX(bullet.getTranslateX() + velocity[0]);
             bullet.setTranslateY(bullet.getTranslateY() + velocity[1]);
 
-            if (bullet.getTranslateX() < 0 || bullet.getTranslateX() > gamePane.getWidth()
-                    || bullet.getTranslateY() < 0 || bullet.getTranslateY() > gamePane.getHeight()) {
+            if (bullet.getTranslateX() < 0 || bullet.getTranslateX() > MAP_WIDTH
+                    || bullet.getTranslateY() < 0 || bullet.getTranslateY() > MAP_HEIGHT) {
                 gamePane.getChildren().remove(bullet);
                 iter.remove();
             }

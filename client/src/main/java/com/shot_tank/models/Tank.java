@@ -8,8 +8,12 @@ import com.shot_tank.services.Service;
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
@@ -39,26 +43,51 @@ public class Tank {
         this.hp = hp;
         this.hpMax = hpMax;
 
-        body = new Rectangle(size, size, Color.GREEN);
+        body = new Rectangle(size, size);
+        body.setFill(new LinearGradient(
+            0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+            new Stop(0, Color.web("#43cea2")),
+            new Stop(1, Color.web("#185a9d"))
+        ));
+        body.setArcWidth(size * 0.4);
+        body.setArcHeight(size * 0.4);
+        body.setStroke(Color.WHITE);
+        body.setStrokeWidth(3);
         body.setTranslateX(x);
         body.setTranslateY(y);
+        body.setEffect(new DropShadow(10, Color.BLACK));
 
-        barrel = new Rectangle(size * 0.25, size * 0.75, Color.DARKGREEN);
+        barrel = new Rectangle(size * 0.25, size * 0.75);
+        barrel.setFill(new LinearGradient(
+            0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+            new Stop(0, Color.web("#f7971e")),
+            new Stop(1, Color.web("#ffd200"))
+        ));
+        barrel.setArcWidth(size * 0.15);
+        barrel.setArcHeight(size * 0.15);
+        barrel.setStroke(Color.DARKGRAY);
+        barrel.setStrokeWidth(2);
         barrel.setTranslateX(x + size / 2 - barrel.getWidth() / 2);
         barrel.setTranslateY(y - barrel.getHeight() / 2);
+        barrel.setEffect(new DropShadow(5, Color.GRAY));
 
         nameLabel = new Label(name);
-        nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 12px;");
+        nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 1);");
         nameLabel.setTranslateX(x + size / 2 - 20);
         nameLabel.setTranslateY(y - 30);
 
         healthBarBg = new Rectangle(size, 6, Color.RED);
+        healthBarBg.setArcWidth(6);
+        healthBarBg.setArcHeight(6);
         healthBarBg.setTranslateX(x);
         healthBarBg.setTranslateY(y - 15);
 
         healthBar = new Rectangle(size * (hp / (double) hpMax), 6, Color.LIME);
+        healthBar.setArcWidth(6);
+        healthBar.setArcHeight(6);
         healthBar.setTranslateX(x);
         healthBar.setTranslateY(y - 15);
+
         this.parent = parent;
         parent.getChildren().addAll(body, barrel, healthBarBg, healthBar, nameLabel);
     }
