@@ -45,7 +45,9 @@ public class Controller {
                     Service.gI().sendListRoom(player);
                     break;
                 case 6:
+                    HandleMessage.gI().startGame(player);
                     break;
+                    
                 default:
                     throw new AssertionError();
             }
