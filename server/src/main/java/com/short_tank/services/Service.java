@@ -126,7 +126,6 @@ public class Service {
                 Player p = room.players.get(i);
                 p.session.sendMessage(msg);
             }
-            player.session.sendMessage(msg);
             msg.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,10 +137,13 @@ public class Service {
             Room room = pl.room;
             if (room != null) {
                 Message msg = new Message((byte) 7);
+                msg.writeUTF(pl.id);
                 msg.writeDouble(pl.location.x);
                 msg.writeDouble(pl.location.y);
                 for (int i = 0; i < room.players.size(); i++) {
                     Player p = room.players.get(i);
+                    if (p.id.equals(pl.id))
+                        continue;
                     p.session.sendMessage(msg);
                 }
                 msg.close();
@@ -155,16 +157,40 @@ public class Service {
         try {
             Room room = pl.room;
             if (room != null) {
-                Message msg = new Message((byte) 7);
+                Message msg = new Message((byte) 8);
+                msg.writeUTF(pl.id);
                 msg.writeDouble(pl.location.angle);
                 for (int i = 0; i < room.players.size(); i++) {
                     Player p = room.players.get(i);
+                    if (p.id.equals(pl.id))
+                        continue;
                     p.session.sendMessage(msg);
                 }
                 msg.close();
             }
         } catch (Exception e) {
         }
+    }
 
+    public void sendPlayerShoot(Player pl, double[] direction) {
+        try {
+            Room room = pl.room;
+            if (room != null) {
+                Message msg = new Message((byte) 9);
+                msg.writeUTF(pl.id);
+                msg.writeDouble(pl.location.x + pl.size / 2);
+                msg.writeDouble(pl.location.y + pl.size / 2);
+                msg.writeDouble(direction[0]);
+                msg.writeDouble(direction[1]);
+                for (int i = 0; i < room.players.size(); i++) {
+                    Player p = room.players.get(i);
+                    if (p.id.equals(pl.id))
+                        continue;
+                    p.session.sendMessage(msg);
+                }
+                msg.close();
+            }
+        } catch (Exception e) {
+        }
     }
 }

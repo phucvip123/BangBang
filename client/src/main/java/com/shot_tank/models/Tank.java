@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.shot_tank.controller.BattleController;
+
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -83,26 +85,20 @@ public class Tank {
         parent.getChildren().addAll(body, barrel, healthBarBg, healthBar, nameLabel);
     }
 
-    public void addBullet(int x, int y) {
+    public void addBullets(double startX, double startY, double dx, double dy) {
         Platform.runLater(() -> {
             Circle bullet = new Circle(5, Color.CYAN);
-            double centerX = x;
-            double centerY = y;
-            bullet.setTranslateX(centerX);
-            bullet.setTranslateY(centerY);
 
-            double dx = x - centerX;
-            double dy = y - centerY;
-            double length = Math.sqrt(dx * dx + dy * dy);
-            bullet.setUserData(new double[] { dx / length * 5, dy / length * 5 });
+            bullet.setTranslateX(startX);
+            bullet.setTranslateY(startY);
 
+            bullet.setUserData(new double[] { dx , dy });
             bullets.add(bullet);
+
             parent.getChildren().add(bullet);
         });
-
     }
-
-    public void updateBullets() {
+    private void updateBullets() {
         Iterator<Circle> iter = bullets.iterator();
         while (iter.hasNext()) {
             Circle bullet = iter.next();
@@ -110,14 +106,13 @@ public class Tank {
             bullet.setTranslateX(bullet.getTranslateX() + velocity[0]);
             bullet.setTranslateY(bullet.getTranslateY() + velocity[1]);
 
-            if (bullet.getTranslateX() < 0 || bullet.getTranslateX() > parent.getWidth()
-                    || bullet.getTranslateY() < 0 || bullet.getTranslateY() > parent.getHeight()) {
+            if (bullet.getTranslateX() < 0 || bullet.getTranslateX() > BattleController.MAP_WIDTH
+                    || bullet.getTranslateY() < 0 || bullet.getTranslateY() > BattleController.MAP_HEIGHT) {
                 parent.getChildren().remove(bullet);
                 iter.remove();
             }
         }
     }
-
     public void updateHealth(int newHp) {
         this.player.hp = newHp;
         double healthRatio = Math.max(0, Math.min(1.0, player.hp / (double) player.hpMax));
@@ -182,7 +177,8 @@ public class Tank {
     }
 
     public void paint(){
-        setPosition(player.location.x, player.location.x);
+        setPosition(player.location.x, player.location.y);
         rotateBarrel(player.location.angle);
+        updateBullets();
     }
 }

@@ -16,6 +16,7 @@ public class Player {
         session.start();
         this.location = new Location(0, 0, 0);
     }
+
     public Session session;
     public String id;
     public String name;
@@ -26,28 +27,34 @@ public class Player {
     public Room room;
     public Boolean isReady = false;
     public int maxBullet = 5;
-    public int speed = 8;
+    public int speed = 12;
     public List<Bullet> bullets = new ArrayList<>();
     public long lastShootTime = 0;
-    public long shootCooldown = 500; 
-    public void update(){
+    public long shootCooldown = 500;
+
+    public void update() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastShootTime > shootCooldown) {
         }
     }
-    public void injured(){
+
+    public void injured() {
         this.hp -= 10;
-        if(this.hp < 0) this.hp = 0;
+        if (this.hp < 0)
+            this.hp = 0;
     }
-    public Player(){
-         this.location = new Location(0, 0, 0);
+
+    public Player() {
+        id = UUID.randomUUID().toString();
+        this.location = new Location(0, 0, 0);
     }
-    public void leaveRoom(){
-        if(room != null){
+
+    public void leaveRoom() {
+        if (room != null) {
             room.players.remove(this);
-            if(room.players.isEmpty()){
+            if (room.players.isEmpty()) {
                 GameServer.rooms.remove(room);
-            }else{
+            } else {
                 room.owner = room.players.get(0);
             }
             this.room = null;

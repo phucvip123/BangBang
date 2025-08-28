@@ -38,5 +38,8 @@ public class ConfigLoader {
     public int getMaxMembersInRoom() {
         return Integer.parseInt(properties.getProperty("max_members_in_room"));
     }
+    public double getBulletSpeed() {
+        return Double.parseDouble(properties.getProperty("bullet_speed"));
+    }
 
 }

@@ -120,5 +120,16 @@ public class Service {
             e.printStackTrace();
         }
     }
+    public void sendShoot(double dx, double dy){
+        try {
+            Message msg = new Message((byte) 9);
+            msg.writeDouble(dx);
+            msg.writeDouble(dy);
+            Session.mySession.sendMessage(msg);
+            msg.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

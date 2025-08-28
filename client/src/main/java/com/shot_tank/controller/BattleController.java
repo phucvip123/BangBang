@@ -41,17 +41,34 @@ public class BattleController implements Initializable {
     private final Set<KeyCode> keysPressed = new HashSet<>();
     private final List<Circle> bullets = new ArrayList<>();
     private double mouseX, mouseY;
+    // đo fps
+    private long lastTime = 0;
+    private int frames = 0;
+    private double fps = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Rectangle mapBackground = new Rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT);
         mapBackground.setFill(new LinearGradient(
-            0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-            new Stop(0, Color.web("#2c3e50")),
-            new Stop(1, Color.web("#27ae60"))
-        ));
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.web("#2c3e50")),
+                new Stop(1, Color.web("#27ae60"))));
         gamePane.getChildren().add(mapBackground);
-
+        // Thêm caro cho nền
+        int cellSize = 80; // kích thước ô caro
+        Color lineColor = Color.rgb(255, 255, 255, 0.12); // màu nhạt
+        for (int x = 0; x <= MAP_WIDTH; x += cellSize) {
+            javafx.scene.shape.Line line = new javafx.scene.shape.Line(x, 0, x, MAP_HEIGHT);
+            line.setStroke(lineColor);
+            line.setStrokeWidth(1.5);
+            gamePane.getChildren().add(line);
+        }
+        for (int y = 0; y <= MAP_HEIGHT; y += cellSize) {
+            javafx.scene.shape.Line line = new javafx.scene.shape.Line(0, y, MAP_WIDTH, y);
+            line.setStroke(lineColor);
+            line.setStrokeWidth(1.5);
+            gamePane.getChildren().add(line);
+        }
         mapBorder = new Rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT);
         mapBorder.setFill(Color.TRANSPARENT);
         mapBorder.setStroke(Color.WHITE);
@@ -64,9 +81,9 @@ public class BattleController implements Initializable {
 
         for (Map.Entry<String, Player> en : playerMap.entrySet()) {
             Player val = en.getValue();
-            val.tank = new Tank(gamePane,val);
+            val.tank = new Tank(gamePane, val);
         }
-        
+
         gamePane.setOnMouseMoved(e -> {
             mouseX = e.getX();
             mouseY = e.getY();
@@ -87,11 +104,30 @@ public class BattleController implements Initializable {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // do fps
+                if (lastTime > 0) {
+                    frames++;
+                    if (now - lastTime >= 1_000_000_000) { // 1 giây
+                        fps = frames;
+                        frames = 0;
+                        lastTime = now;
+                        // System.out.println("FPS: " + fps);
+                    }
+                } else {
+                    lastTime = now;
+                }
+                // ============================
                 moveTank();
                 double angle = playerTank.rotateBarrel(mouseX, mouseY);
-                if(Math.abs(angle - playerTank.player.location.angle) > 1){
+                if (Math.abs(angle - playerTank.player.location.angle) > 1) {
                     Service.gI().sendAngle(angle);
                     playerTank.player.location.angle = angle;
+                }
+                for (java.util.Map.Entry<String, Player> entry : playerMap.entrySet()) {
+                    Player player = entry.getValue();
+                    player.tank.paint();
+                    // System.out.println("Player " + player.name + " is at (" + player.location.x +
+                    // ", " + player.location.y + ")");
                 }
                 updateBullets();
                 updateCamera();
@@ -140,12 +176,11 @@ public class BattleController implements Initializable {
 
         newX = Math.max(0, Math.min(newX, MAP_WIDTH - size));
         newY = Math.max(0, Math.min(newY, MAP_HEIGHT - size));
-        if(newX != playerTank.player.location.x || newY != playerTank.player.location.y){
+        if (newX != playerTank.player.location.x || newY != playerTank.player.location.y) {
             Service.gI().sendMove(newX, newY);
         }
         playerTank.setPosition(newX, newY);
     }
-    
 
     private void shoot() {
         Circle bullet = new Circle(5, Color.CYAN);
@@ -156,7 +191,7 @@ public class BattleController implements Initializable {
 
         double dx = mouseX - centerX;
         double dy = mouseY - centerY;
-
+        Service.gI().sendShoot(dx, dy);
         double length = Math.sqrt(dx * dx + dy * dy);
         bullet.setUserData(new double[] { dx / length * 5, dy / length * 5 });
 

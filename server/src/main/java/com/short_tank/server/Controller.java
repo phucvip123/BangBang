@@ -19,7 +19,9 @@ public class Controller {
     public void handleMessage(Player player, Message msg) {
         try {
             byte type = msg.getType();
-            System.out.println("Receive MSG: " + type);
+            if(type != 7 && type !=8) {
+                System.out.println("Receive MSG: " + type);
+            }
             switch (type) {
                 case 0:
                     String name = msg.readUTF();
@@ -55,6 +57,12 @@ public class Controller {
                 case 8:
                     double angle = msg.readDouble();
                     HandleMessage.gI().playerAngle(player, angle);
+                    break;
+                case 9:
+                    double[] direction = new double[2];
+                    direction[0] = msg.readDouble();
+                    direction[1] = msg.readDouble();
+                    HandleMessage.gI().playerShoot(player, direction[0], direction[1]);
                     break;
                 default:
                     throw new AssertionError();

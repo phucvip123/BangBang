@@ -108,12 +108,24 @@ public class HandleMessage {
         player.location.y = y;
         Service.gI().sendLocationMeInMap(player);
     }
+
     public void playerAngle(Player player, double angle) {
         if (player.room == null) {
             return;
         }
         player.location.angle = angle;
         Service.gI().sendAngleMeInMap(player);
+    }
+
+    public void playerShoot(Player player, double dx, double dy) {
+        if (player.room == null) {
+            return;
+        }
+        double length = Math.sqrt(dx * dx + dy * dy);
+        double vx = dx / length * ConfigLoader.gI().getBulletSpeed();
+        double vy = dy / length * ConfigLoader.gI().getBulletSpeed();
+        Service.gI().sendPlayerShoot(player, new double[] { vx, vy });
+
     }
 
 }

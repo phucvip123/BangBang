@@ -25,7 +25,9 @@ public class HandleMessage {
     public void onMessage(Message msg) {
         try {
             byte type = msg.getType();
-            System.out.println("Receive MSG: " + type);
+            if (type != 7 && type != 8) {
+                System.out.println("Receive MSG: " + type);
+            }
             switch (type) {
                 case -1:
                     String title = msg.readUTF();
@@ -133,7 +135,17 @@ public class HandleMessage {
                         int size = msg.readInt();
                         double x = msg.readDouble();
                         double y = msg.readDouble();
-                        BattleController.playerMap.put(id, new Player(id, name, hp, hpMax, dmg, size, speed, x, y));
+                        if (id.equals(Player.myChar().id)) {
+                            Player.myChar().hp = hp;
+                            Player.myChar().hpMax = hpMax;
+                            Player.myChar().dmg = dmg;
+                            Player.myChar().size = size;
+                            Player.myChar().speed = speed;
+                            Player.myChar().location.x = x;
+                            Player.myChar().location.y = y;
+                        } else {
+                            BattleController.playerMap.put(id, new Player(id, name, hp, hpMax, dmg, size, speed, x, y));
+                        }
                     }
 
                     Platform.runLater(() -> {
@@ -142,6 +154,42 @@ public class HandleMessage {
                         } catch (Exception e) {
                         }
                     });
+                    break;
+                case 7:
+                    String id = msg.readUTF();
+                    double x = msg.readDouble();
+                    double y = msg.readDouble();
+                    Player pl = BattleController.playerMap.get(id);
+                    if (id.equals(Player.myChar().id)) {
+                        Player.myChar().location.x = x;
+                        Player.myChar().location.y = y;
+                    } else if (pl != null) {
+                        pl.location.x = x;
+                        pl.location.y = y;
+                    }
+                    break;
+                case 8:
+                    id = msg.readUTF();
+                    double angle = msg.readDouble();
+                    pl = BattleController.playerMap.get(id);
+                    if (id.equals(Player.myChar().id)) {
+                        Player.myChar().location.angle = angle;
+                    } else if (pl != null) {
+                        pl.location.angle = angle;
+                    }
+                    break;
+                case 9:
+                    id = msg.readUTF();
+                    x = msg.readDouble();
+                    y = msg.readDouble();
+                    double dx = msg.readDouble();
+                    double dy = msg.readDouble();
+                    pl = BattleController.playerMap.get(id);
+                    if (id.equals(Player.myChar().id)) {
+                        Player.myChar().tank.addBullets(x, y, dx, dy);
+                    } else if (pl != null) {
+                        pl.tank.addBullets(x, y, dx, dy);
+                    }
                     break;
                 default:
                     throw new AssertionError();
