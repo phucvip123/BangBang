@@ -102,12 +102,20 @@ public class HandleMessage {
         }
     }
 
-    public void playerMove(Player player, int x, int y) {
+    public void playerMove(Player player, double x, double y) {
         if (player.room == null) {
             return;
         }
         player.location.x = x;
         player.location.y = y;
+        Service.gI().sendLocationMeInMap(player);
+    }
+    public void playerAngle(Player player, double angle) {
+        if (player.room == null) {
+            return;
+        }
+        player.location.angle = angle;
+        Service.gI().sendAngleMeInMap(player);
     }
 
 }

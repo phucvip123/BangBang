@@ -1,9 +1,18 @@
 package com.shot_tank.controller;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+
 import com.shot_tank.models.Player;
 import com.shot_tank.models.Tank;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -12,13 +21,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 public class BattleController implements Initializable {
+    public static Map<String, Player> playerMap = new HashMap<>();
     public static final double MAP_WIDTH = 1600;
     public static final double MAP_HEIGHT = 1600;
 
@@ -49,8 +59,7 @@ public class BattleController implements Initializable {
         mapBorder.setArcHeight(30);
         gamePane.getChildren().add(mapBorder);
 
-        playerTank = new Tank(gamePane, Player.myChar().location.x, Player.myChar().location.x, Player.myChar().size,
-                Player.myChar().name, Player.myChar().hp, Player.myChar().hpMax);
+        playerTank = new Tank(gamePane, Player.myChar());
         Player.myChar().tank = playerTank;
 
         gamePane.setOnMouseMoved(e -> {
@@ -74,7 +83,7 @@ public class BattleController implements Initializable {
             @Override
             public void handle(long now) {
                 moveTank();
-                playerTank.rotateBarrel(mouseX, mouseY);
+                double angle = playerTank.rotateBarrel(mouseX, mouseY);
                 updateBullets();
                 updateCamera();
             }
@@ -125,6 +134,7 @@ public class BattleController implements Initializable {
 
         playerTank.setPosition(newX, newY);
     }
+    
 
     private void shoot() {
         Circle bullet = new Circle(5, Color.CYAN);

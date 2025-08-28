@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.short_tank.message.Message;
-import com.short_tank.models.Bullet;
 import com.short_tank.models.Player;
 import com.short_tank.models.Room;
 import com.short_tank.server.GameServer;
@@ -80,7 +79,6 @@ public class Service {
         }
     }
 
-
     public void sendListRoom(Player pl) {
         try {
             Message msg = new Message((byte) 5);
@@ -102,6 +100,7 @@ public class Service {
         } catch (Exception e) {
         }
     }
+
     public void sendStartGame(Player player) {
         try {
             Message msg = new Message((byte) 6);
@@ -110,5 +109,37 @@ public class Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendLocationMeInMap(Player pl) {
+        try {
+            Room room = pl.room;
+            if (room != null) {
+                Message msg = new Message((byte) 7);
+                msg.writeDouble(pl.location.x);
+                msg.writeDouble(pl.location.y);
+                for (int i = 0; i < room.players.size(); i++) {
+                    Player p = room.players.get(i);
+                    p.session.sendMessage(msg);
+                }
+            }
+        } catch (Exception e) {
+        }
+
+    }
+    public void sendAngleMeInMap(Player pl) {
+        try {
+            Room room = pl.room;
+            if (room != null) {
+                Message msg = new Message((byte) 7);
+                msg.writeDouble(pl.location.angle);
+                for (int i = 0; i < room.players.size(); i++) {
+                    Player p = room.players.get(i);
+                    p.session.sendMessage(msg);
+                }
+            }
+        } catch (Exception e) {
+        }
+
     }
 }

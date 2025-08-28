@@ -36,36 +36,40 @@ public class Service {
             e.printStackTrace();
         }
     }
-    public void sendJoinRoom(String roomId){
-        try{
-            Message msg = new Message((byte)2);
+
+    public void sendJoinRoom(String roomId) {
+        try {
+            Message msg = new Message((byte) 2);
             msg.writeUTF(roomId);
             Session.mySession.sendMessage(msg);
             msg.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void sendLeaveRoom(){
+
+    public void sendLeaveRoom() {
         try {
-            Message msg = new Message((byte)3);
+            Message msg = new Message((byte) 3);
             Session.mySession.sendMessage(msg);
             msg.close();
         } catch (Exception e) {
         }
     }
-    public void sendReady(boolean isReady){
+
+    public void sendReady(boolean isReady) {
         try {
-            Message msg = new Message((byte)4);
+            Message msg = new Message((byte) 4);
             msg.writeBoolean(isReady);
             Session.mySession.sendMessage(msg);
             msg.close();
         } catch (Exception e) {
         }
     }
-    public void sendMove(int x,int y){
+
+    public void sendMove(int x, int y) {
         try {
-            Message msg = new Message((byte)5);
+            Message msg = new Message((byte) 5);
             msg.writeInt(x);
             msg.writeInt(y);
             Session.mySession.sendMessage(msg);
@@ -74,25 +78,47 @@ public class Service {
             e.printStackTrace();
         }
     }
-    public void sendRequestListRoom(){
+
+    public void sendRequestListRoom() {
         try {
-            Message msg = new Message((byte)5);
+            Message msg = new Message((byte) 5);
             Session.mySession.sendMessage(msg);
             msg.close();
         } catch (Exception e) {
         }
     }
+
     public void sendStartGame() {
         try {
-            Message msg = new Message((byte)6);
+            Message msg = new Message((byte) 6);
             Session.mySession.sendMessage(msg);
             msg.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void sendMove(){
-        
+
+    public void sendMove(double x, double y) {
+        try {
+            Message msg = new Message((byte) 7);
+            msg.writeDouble(x);
+            msg.writeDouble(y);
+            Session.mySession.sendMessage(msg);
+            msg.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendAngle(double angle) {
+        try {
+            Message msg = new Message((byte) 8);
+            msg.writeDouble(angle);
+            Session.mySession.sendMessage(msg);
+            msg.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

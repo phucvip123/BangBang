@@ -47,7 +47,15 @@ public class Controller {
                 case 6:
                     HandleMessage.gI().startGame(player);
                     break;
-                    
+                case 7:
+                    double x = msg.readDouble();
+                    double y = msg.readDouble();
+                    HandleMessage.gI().playerMove(player, x, y);
+                    break;
+                case 8:
+                    double angle = msg.readDouble();
+                    HandleMessage.gI().playerAngle(player, angle);
+                    break;
                 default:
                     throw new AssertionError();
             }

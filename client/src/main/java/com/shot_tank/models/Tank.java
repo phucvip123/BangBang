@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.shot_tank.services.Service;
-
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -25,68 +23,61 @@ public class Tank {
     // Image bulletImage = new
     // Image(getClass().getResource("/images/bullet.png").toExternalForm());
 
-    private Rectangle body;
-    private Rectangle barrel;
-    private Rectangle healthBarBg;
-    private Rectangle healthBar;
-    private Label nameLabel;
-    private double x, y;
-    private double size;
-    private int hp, hpMax;
+    private final Rectangle body;
+    private final Rectangle barrel;
+    private final Rectangle healthBarBg;
+    private final Rectangle healthBar;
+    private final Label nameLabel;
     private List<Circle> bullets = new ArrayList<>();
-    private Pane parent;
+    private final Pane parent;
+    public Player player;
+    public Tank(Pane parent, Player player) {
+        this.player = player;
 
-    public Tank(Pane parent, double x, double y, double size, String name, int hp, int hpMax) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.hp = hp;
-        this.hpMax = hpMax;
-
-        body = new Rectangle(size, size);
+        body = new Rectangle(player.size, player.size);
         body.setFill(new LinearGradient(
             0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
             new Stop(0, Color.web("#43cea2")),
             new Stop(1, Color.web("#185a9d"))
         ));
-        body.setArcWidth(size * 0.4);
-        body.setArcHeight(size * 0.4);
+        body.setArcWidth(player.size * 0.4);
+        body.setArcHeight(player.size * 0.4);
         body.setStroke(Color.WHITE);
         body.setStrokeWidth(3);
-        body.setTranslateX(x);
-        body.setTranslateY(y);
+        body.setTranslateX(player.location.x);
+        body.setTranslateY(player.location.y);
         body.setEffect(new DropShadow(10, Color.BLACK));
 
-        barrel = new Rectangle(size * 0.25, size * 0.75);
+        barrel = new Rectangle(player.size * 0.25, player.size * 0.75);
         barrel.setFill(new LinearGradient(
             0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
             new Stop(0, Color.web("#f7971e")),
             new Stop(1, Color.web("#ffd200"))
         ));
-        barrel.setArcWidth(size * 0.15);
-        barrel.setArcHeight(size * 0.15);
+        barrel.setArcWidth(player.size * 0.15);
+        barrel.setArcHeight(player.size * 0.15);
         barrel.setStroke(Color.DARKGRAY);
         barrel.setStrokeWidth(2);
-        barrel.setTranslateX(x + size / 2 - barrel.getWidth() / 2);
-        barrel.setTranslateY(y - barrel.getHeight() / 2);
+        barrel.setTranslateX(player.location.x + player.size / 2 - barrel.getWidth() / 2);
+        barrel.setTranslateY(player.location.y - barrel.getHeight() / 2);
         barrel.setEffect(new DropShadow(5, Color.GRAY));
 
-        nameLabel = new Label(name);
+        nameLabel = new Label(player.name);
         nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 1);");
-        nameLabel.setTranslateX(x + size / 2 - 20);
-        nameLabel.setTranslateY(y - 30);
+        nameLabel.setTranslateX(player.location.x + player.size / 2 - 20);
+        nameLabel.setTranslateY(player.location.y - 30);
 
-        healthBarBg = new Rectangle(size, 6, Color.RED);
+        healthBarBg = new Rectangle(player.size, 6, Color.RED);
         healthBarBg.setArcWidth(6);
         healthBarBg.setArcHeight(6);
-        healthBarBg.setTranslateX(x);
-        healthBarBg.setTranslateY(y - 15);
+        healthBarBg.setTranslateX(player.location.x);
+        healthBarBg.setTranslateY(player.location.y - 15);
 
-        healthBar = new Rectangle(size * (hp / (double) hpMax), 6, Color.LIME);
+        healthBar = new Rectangle(player.size * (player.hp / (double) player.hpMax), 6, Color.LIME);
         healthBar.setArcWidth(6);
         healthBar.setArcHeight(6);
-        healthBar.setTranslateX(x);
-        healthBar.setTranslateY(y - 15);
+        healthBar.setTranslateX(player.location.x);
+        healthBar.setTranslateY(player.location.y - 15);
 
         this.parent = parent;
         parent.getChildren().addAll(body, barrel, healthBarBg, healthBar, nameLabel);
@@ -128,9 +119,9 @@ public class Tank {
     }
 
     public void updateHealth(int newHp) {
-        this.hp = newHp;
-        double healthRatio = Math.max(0, Math.min(1.0, hp / (double) hpMax));
-        healthBar.setWidth(size * healthRatio);
+        this.player.hp = newHp;
+        double healthRatio = Math.max(0, Math.min(1.0, player.hp / (double) player.hpMax));
+        healthBar.setWidth(player.size * healthRatio);
     }
 
     public Rectangle getBody() {
@@ -142,22 +133,19 @@ public class Tank {
     }
 
     public void setPosition(double x, double y) {
-        if (x == this.x && y == this.y) {
-            return;
-        }
-        double dx = x - this.x;
-        double dy = y - this.y;
+        double dx = x - this.player.location.x;
+        double dy = y - this.player.location.y;
 
         double angle = Math.toDegrees(Math.atan2(dy, dx));
         body.setRotate(angle);
 
-        this.x = x;
-        this.y = y;
+        this.player.location.x = x;
+        this.player.location.y = y;
 
         body.setTranslateX(x);
         body.setTranslateY(y);
 
-        barrel.setTranslateX(x + size / 2 - barrel.getWidth() / 2);
+        barrel.setTranslateX(x + player.size / 2 - barrel.getWidth() / 2);
         barrel.setTranslateY(y);
 
         healthBar.setTranslateX(x);
@@ -165,16 +153,16 @@ public class Tank {
         healthBarBg.setTranslateX(x);
         healthBarBg.setTranslateY(y - 15);
 
-        nameLabel.setTranslateX(x + size / 2 - 20);
+        nameLabel.setTranslateX(x + player.size / 2 - 20);
         nameLabel.setTranslateY(y - 30);
     }
 
-    public void rotateBarrel(double mouseX, double mouseY) {
-        double centerX = x + size / 2;
-        double centerY = y + size / 2;
+    public double rotateBarrel(double mouseX, double mouseY) {
+        double centerX = player.location.x + player.size / 2;
+        double centerY = player.location.y + player.size / 2;
         double angle = Math.toDegrees(Math.atan2(mouseY - centerY, mouseX - centerX)) - 90;
         barrel.setRotate(angle);
-
+        return angle;
     }
 
     public void rotateBarrel(double angle) {
@@ -182,14 +170,19 @@ public class Tank {
     }
 
     public double getCenterX() {
-        return x + size / 2;
+        return player.location.x + player.size / 2;
     }
 
     public double getCenterY() {
-        return y + size / 2;
+        return player.location.y + player.size / 2;
     }
 
     public double getAngle() {
         return barrel.getRotate();
+    }
+
+    public void paint(){
+        setPosition(player.location.x, player.location.x);
+        rotateBarrel(player.location.angle);
     }
 }
