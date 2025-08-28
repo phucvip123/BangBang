@@ -14,6 +14,7 @@ public class Player {
         this.id = UUID.randomUUID().toString();
         session.setPlayer(this);
         session.start();
+        this.location = new Location(0, 0, 0);
     }
     public Session session;
     public String id;
@@ -37,6 +38,9 @@ public class Player {
     public void injured(){
         this.hp -= 10;
         if(this.hp < 0) this.hp = 0;
+    }
+    public Player(){
+         this.location = new Location(0, 0, 0);
     }
     public void leaveRoom(){
         if(room != null){

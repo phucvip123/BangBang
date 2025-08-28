@@ -117,6 +117,9 @@ public class RoomController implements Initializable {
                             "-fx-padding: 8 20 8 20;" +
                             "-fx-background-radius: 20;" +
                             "-fx-cursor: hand;"));
+            btnStartGame.setOnAction(e ->{
+                Service.gI().sendStartGame();
+            });
 
             rootVBox.getChildren().add(btnStartGame);
 
