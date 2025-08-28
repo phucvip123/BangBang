@@ -13,6 +13,8 @@ public class Player {
     public String id;
     public String name;
     public int hp,hpMax;
+    public int dmg;
+    public int speed;
     public Location location;
     public int size = 50;
     public Room room;
@@ -22,11 +24,14 @@ public class Player {
     public Player(){
         this.location = new Location(0, 0, 0);
     }
-    public Player(String id,String name,int hp,int hpMax,int x,int y,double angle) {
+    public Player(String id,String name,int hp,int hpMax, int dmg, int size,int speed, double x, double y) {
         this.id = id;
         this.name = name;
         this.hp = hp;
         this.hpMax = hpMax;
-        this.location = new Location(x,y,angle);
+        this.size = size;
+        this.dmg = dmg;
+        this.speed = speed;
+        this.location = new Location(x,y,0);
     }
 }

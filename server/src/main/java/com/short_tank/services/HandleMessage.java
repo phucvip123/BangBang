@@ -97,9 +97,7 @@ public class HandleMessage {
                     "Tất cả thành viên trong phòng phải sẵn sàng!");
             return;
         }
-        for (Player p : player.room.players) {
-            Service.gI().sendStartGame(p);
-        }
+        Service.gI().sendStartGame(player);
     }
 
     public void playerMove(Player player, double x, double y) {

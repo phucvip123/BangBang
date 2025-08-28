@@ -33,7 +33,7 @@ public class Tank {
     public Player player;
     public Tank(Pane parent, Player player) {
         this.player = player;
-
+        player.tank = this;
         body = new Rectangle(player.size, player.size);
         body.setFill(new LinearGradient(
             0, 0, 1, 1, true, CycleMethod.NO_CYCLE,

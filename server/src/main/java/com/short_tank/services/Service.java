@@ -103,7 +103,29 @@ public class Service {
 
     public void sendStartGame(Player player) {
         try {
+            Room room = player.room;
+            if (room != null) {
+
+            }
             Message msg = new Message((byte) 6);
+            int countPlayerInRooms = room.players.size();
+            msg.writeInt(countPlayerInRooms);
+            for (int i = 0; i < countPlayerInRooms; i++) {
+                Player p = room.players.get(i);
+                msg.writeUTF(p.id);
+                msg.writeUTF(p.name);
+                msg.writeInt(p.hp);
+                msg.writeInt(p.hpMax);
+                msg.writeInt(p.dmg);
+                msg.writeInt(p.speed);
+                msg.writeInt(p.size);
+                msg.writeDouble(p.location.x);
+                msg.writeDouble(p.location.y);
+            }
+            for (int i = 0; i < countPlayerInRooms; i++) {
+                Player p = room.players.get(i);
+                p.session.sendMessage(msg);
+            }
             player.session.sendMessage(msg);
             msg.close();
         } catch (Exception e) {
@@ -122,11 +144,13 @@ public class Service {
                     Player p = room.players.get(i);
                     p.session.sendMessage(msg);
                 }
+                msg.close();
             }
         } catch (Exception e) {
         }
 
     }
+
     public void sendAngleMeInMap(Player pl) {
         try {
             Room room = pl.room;
@@ -137,6 +161,7 @@ public class Service {
                     Player p = room.players.get(i);
                     p.session.sendMessage(msg);
                 }
+                msg.close();
             }
         } catch (Exception e) {
         }

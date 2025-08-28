@@ -19,11 +19,13 @@ public class Player {
     public String id;
     public String name;
     public int hp = 100, hpMax = 100;
+    public int dmg = 5;
     public Location location;
     public int size = 50;
     public Room room;
     public Boolean isReady = false;
     public int maxBullet = 5;
+    public int speed = 8;
     public List<Bullet> bullets = new ArrayList<>();
     public long lastShootTime = 0;
     public long shootCooldown = 500; 

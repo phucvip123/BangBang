@@ -121,6 +121,21 @@ public class HandleMessage {
                     });
                     break;
                 case 6:
+                    int countPlayerInRoom = msg.readInt();
+                    BattleController.playerMap.clear();
+                    for (int i = 0; i < countPlayerInRoom; i++) {
+                        String id = msg.readUTF();
+                        String name = msg.readUTF();
+                        int hp = msg.readInt();
+                        int hpMax = msg.readInt();
+                        int dmg = msg.readInt();
+                        int speed = msg.readInt();
+                        int size = msg.readInt();
+                        double x = msg.readDouble();
+                        double y = msg.readDouble();
+                        BattleController.playerMap.put(id, new Player(id, name, hp, hpMax, dmg, size, speed, x, y));
+                    }
+
                     Platform.runLater(() -> {
                         try {
                             MainApp.setRoot("Battle.fxml", 800, 600);

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.shot_tank.models.Player;
 import com.shot_tank.models.Tank;
+import com.shot_tank.services.Service;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -60,8 +61,12 @@ public class BattleController implements Initializable {
         gamePane.getChildren().add(mapBorder);
 
         playerTank = new Tank(gamePane, Player.myChar());
-        Player.myChar().tank = playerTank;
 
+        for (Map.Entry<String, Player> en : playerMap.entrySet()) {
+            Player val = en.getValue();
+            val.tank = new Tank(gamePane,val);
+        }
+        
         gamePane.setOnMouseMoved(e -> {
             mouseX = e.getX();
             mouseY = e.getY();
@@ -84,6 +89,10 @@ public class BattleController implements Initializable {
             public void handle(long now) {
                 moveTank();
                 double angle = playerTank.rotateBarrel(mouseX, mouseY);
+                if(Math.abs(angle - playerTank.player.location.angle) > 1){
+                    Service.gI().sendAngle(angle);
+                    playerTank.player.location.angle = angle;
+                }
                 updateBullets();
                 updateCamera();
             }
@@ -131,7 +140,9 @@ public class BattleController implements Initializable {
 
         newX = Math.max(0, Math.min(newX, MAP_WIDTH - size));
         newY = Math.max(0, Math.min(newY, MAP_HEIGHT - size));
-
+        if(newX != playerTank.player.location.x || newY != playerTank.player.location.y){
+            Service.gI().sendMove(newX, newY);
+        }
         playerTank.setPosition(newX, newY);
     }
     
