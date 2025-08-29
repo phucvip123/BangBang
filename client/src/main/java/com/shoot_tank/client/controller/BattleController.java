@@ -60,9 +60,8 @@ public class BattleController implements Initializable {
                 new Stop(0, Color.web("#2c3e50")),
                 new Stop(1, Color.web("#27ae60"))));
         gamePane.getChildren().add(mapBackground);
-        // Thêm caro cho nền
-        int cellSize = 80; // kích thước ô caro
-        Color lineColor = Color.rgb(255, 255, 255, 0.12); // màu nhạt
+        int cellSize = 80; 
+        Color lineColor = Color.rgb(255, 255, 255, 0.12); 
         for (int x = 0; x <= MAP_WIDTH; x += cellSize) {
             javafx.scene.shape.Line line = new javafx.scene.shape.Line(x, 0, x, MAP_HEIGHT);
             line.setStroke(lineColor);
@@ -116,7 +115,7 @@ public class BattleController implements Initializable {
                 // do fps
                 if (lastTime > 0) {
                     frames++;
-                    if (now - lastTime >= 1_000_000_000) { // 1 giây
+                    if (now - lastTime >= 1_000_000_000) { 
                         fps = frames;
                         frames = 0;
                         lastTime = now;

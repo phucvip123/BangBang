@@ -46,7 +46,7 @@ public class RoomController implements Initializable {
             VBox playerBox = new VBox(5);
             playerBox.setAlignment(Pos.CENTER);
             playerBox.setPadding(new Insets(10));
-            playerBox.setPrefSize(120, 80); // ô vuông nhỏ gọn
+            playerBox.setPrefSize(120, 80);
 
             Player p = Player.myChar().room.players.get(i);
 
