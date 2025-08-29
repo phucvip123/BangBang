@@ -1,12 +1,13 @@
-package com.shot_tank.models;
+package com.shoot_tank.client.models;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.shot_tank.controller.BattleController;
-import com.shot_tank.services.Util;
+import com.shoot_tank.client.controller.BattleController;
+import com.shoot_tank.client.services.Util;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;

@@ -36,6 +36,7 @@ public class GameServer extends Thread {
 
             while (true) {
                 Socket socket = serverSocket.accept();
+                socket.setTcpNoDelay(true);
                 System.out.println("New player connected: " + socket);
                 Session session = new Session(socket);
                 Player player = new Player(session);

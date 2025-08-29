@@ -1,7 +1,8 @@
-package com.shot_tank.controller;
+package com.shoot_tank.client.controller;
 
-import com.shot_tank.network.Session;
-import com.shot_tank.services.Service;
+
+import com.shoot_tank.client.network.Session;
+import com.shoot_tank.client.services.Service;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

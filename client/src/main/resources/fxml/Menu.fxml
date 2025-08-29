@@ -8,7 +8,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.shot_tank.controller.MenuController"
+      fx:controller="com.shoot_tank.client.controller.MenuController"
       alignment="CENTER" spacing="20" style="-fx-padding:20;">
     <Label fx:id="txtWelcome" layoutX="100" layoutY="100" text="Welcome!"/>
     <Button text="Create Room" onAction="#onCreateRoom"/>

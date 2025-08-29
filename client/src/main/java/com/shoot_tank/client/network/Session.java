@@ -1,11 +1,12 @@
-package com.shot_tank.network;
+package com.shoot_tank.client.network;
+
 
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.shot_tank.ConfigLoader;
-import com.shot_tank.message.Message;
+import com.shoot_tank.client.ConfigLoader;
+import com.shoot_tank.client.message.Message;
 
 import java.io.*;
 
@@ -22,6 +23,7 @@ public class Session extends Thread {
     public Session() throws IOException {
 
         this.socket = new Socket(ConfigLoader.getInstance().getHost(), ConfigLoader.getInstance().getPort());
+        socket.setTcpNoDelay(true);
         connected = true;
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
@@ -70,6 +72,11 @@ public class Session extends Thread {
             stopHandler();
         }
     }
+    public void shutdown() {
+    if (socket != null && !socket.isClosed()) {
+        try { socket.close(); } catch (Exception e) { }
+    }
+}
 
     public void sendMessage(Message msg) {
         try {

@@ -1,4 +1,4 @@
-package com.shot_tank.message;
+package com.shoot_tank.client.message;
 
 
 import java.io.ByteArrayInputStream;

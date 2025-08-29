@@ -206,4 +206,16 @@ public class Service {
         } catch (Exception e) {
         }
     }
+    public void sendPlayerDie(Player player) {
+        try {
+            Message msg = new Message((byte) 11);
+            msg.writeUTF(player.id);
+            for (Player p : player.room.players) {
+                if(p.id.equals(player.id)) continue;
+                p.session.sendMessage(msg);
+            }
+            msg.close();
+        } catch (Exception e) {
+        }
+    }
 }

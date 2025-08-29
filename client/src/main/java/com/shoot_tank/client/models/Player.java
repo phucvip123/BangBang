@@ -1,4 +1,5 @@
-package com.shot_tank.models;
+package com.shoot_tank.client.models;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class Player {
     public List<Bullet> bullets = new ArrayList<>();
     public Tank tank;
     public int injured = 0;
+    public boolean isBattle = false;
     public Player(){
         this.location = new Location(0, 0, 0);
     }

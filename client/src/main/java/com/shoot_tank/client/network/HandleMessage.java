@@ -1,11 +1,17 @@
-package com.shot_tank.network;
+package com.shoot_tank.client.network;
 
-import com.shot_tank.MainApp;
-import com.shot_tank.controller.BattleController;
-import com.shot_tank.controller.ListRoomController;
-import com.shot_tank.message.Message;
-import com.shot_tank.models.Player;
-import com.shot_tank.models.Room;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import com.shoot_tank.client.App;
+import com.shoot_tank.client.controller.BattleController;
+import com.shoot_tank.client.controller.ListRoomController;
+import com.shoot_tank.client.message.Message;
+import com.shoot_tank.client.models.Player;
+import com.shoot_tank.client.models.Room;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -50,7 +56,7 @@ public class HandleMessage {
                     Player.myChar().name = msg.readUTF();
                     Platform.runLater(() -> {
                         try {
-                            MainApp.setRoot("Menu.fxml", 400, 300);
+                            App.setRoot("Menu.fxml", 400, 300);
                         } catch (Exception e) {
                         }
                     });
@@ -61,7 +67,7 @@ public class HandleMessage {
                         Player.myChar().room = null;
                         Platform.runLater(() -> {
                             try {
-                                MainApp.setRoot("Menu.fxml", 400, 300);
+                                App.setRoot("Menu.fxml", 400, 300);
                             } catch (Exception e) {
                             }
                         });
@@ -76,6 +82,7 @@ public class HandleMessage {
                         Player.myChar().room.idOwner = idOwner;
                         Player.myChar().room.addPlayers(Player.myChar());
                         int countPlayersInRoom = msg.readInt();
+
                         for (int i = 0; i < countPlayersInRoom; i++) {
                             String plId = msg.readUTF();
                             if (plId.equals(Player.myChar().id)) {
@@ -89,12 +96,26 @@ public class HandleMessage {
                             pl.isReady = msg.readBoolean();
                             Player.myChar().room.addPlayers(pl);
                         }
-                        Platform.runLater(() -> {
-                            try {
-                                MainApp.setRoot("Room.fxml", 650, 250);
-                            } catch (Exception e) {
+
+                        if (Player.myChar().isBattle) {
+                            Set<Player> playerSet = new HashSet<>(Player.myChar().room.players);
+                            Iterator<Map.Entry<String, Player>> iterator = BattleController.playerMap.entrySet()
+                                    .iterator();
+                            while (iterator.hasNext()) {
+                                Map.Entry<String, Player> entry = iterator.next();
+                                if (!playerSet.contains(entry.getValue())) {
+                                    iterator.remove();
+                                }
                             }
-                        });
+                        } else {
+                            Platform.runLater(() -> {
+                                try {
+                                    App.setRoot("Room.fxml", 650, 250);
+                                } catch (Exception e) {
+                                }
+                            });
+                        }
+
                     }
                     break;
                 case 4:
@@ -117,7 +138,7 @@ public class HandleMessage {
                     }
                     Platform.runLater(() -> {
                         try {
-                            MainApp.setRoot("ListRoom.fxml", 500, 400);
+                            App.setRoot("ListRoom.fxml", 500, 400);
                         } catch (Exception e) {
                         }
                     });
@@ -150,7 +171,7 @@ public class HandleMessage {
 
                     Platform.runLater(() -> {
                         try {
-                            MainApp.setRoot("Battle.fxml", 800, 600);
+                            App.setRoot("Battle.fxml", 800, 600);
                         } catch (Exception e) {
                         }
                     });
@@ -202,6 +223,15 @@ public class HandleMessage {
                     } else if (pl != null) {
                         pl.injured += injured;
                         pl.hp = hp;
+                    }
+                    break;
+                case 11:
+                    id = msg.readUTF();
+                    pl = BattleController.playerMap.get(id);
+                    if (id.equals(Player.myChar().id)) {
+                        
+                    } else if (pl != null) {
+                        BattleController.playerMap.remove(id);
                     }
                     break;
                 default:

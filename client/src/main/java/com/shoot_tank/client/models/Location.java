@@ -1,4 +1,4 @@
-package com.shot_tank.models;
+package com.shoot_tank.client.models;
 
 public class Location {
 

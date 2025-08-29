@@ -1,10 +1,11 @@
-package com.shot_tank.controller;
+package com.shoot_tank.client.controller;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.shot_tank.models.Player;
-import com.shot_tank.services.Service;
+import com.shoot_tank.client.models.Player;
+import com.shoot_tank.client.services.Service;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

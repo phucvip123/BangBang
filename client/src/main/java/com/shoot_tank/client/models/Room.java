@@ -1,4 +1,5 @@
-package com.shot_tank.models;
+package com.shoot_tank.client.models;
+
 
 import java.util.ArrayList;
 import java.util.List;

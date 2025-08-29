@@ -1,7 +1,7 @@
-package com.shot_tank.services;
+package com.shoot_tank.client.services;
 
-import com.shot_tank.message.Message;
-import com.shot_tank.network.Session;
+import com.shoot_tank.client.message.Message;
+import com.shoot_tank.client.network.Session;
 
 public class Service {
 
@@ -131,5 +131,4 @@ public class Service {
             e.printStackTrace();
         }
     }
-
 }

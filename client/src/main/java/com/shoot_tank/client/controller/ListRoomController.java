@@ -1,11 +1,12 @@
-package com.shot_tank.controller;
+package com.shoot_tank.client.controller;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.shot_tank.MainApp;
-import com.shot_tank.models.Room;
-import com.shot_tank.services.Service;
+import com.shoot_tank.client.App;
+import com.shoot_tank.client.models.Room;
+import com.shoot_tank.client.services.Service;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -22,7 +23,7 @@ public class ListRoomController {
     @FXML
     private void onMenuClicked() {
         try {
-            MainApp.setRoot("Menu.fxml", 400, 300);
+            App.setRoot("Menu.fxml", 400, 300);
         } catch (Exception e) {
         }
     }
@@ -40,7 +41,7 @@ public class ListRoomController {
             joinBtn.setOnAction(e -> {
                 try {
                     Service.gI().sendJoinRoom(room.id);
-                    MainApp.setRoot("Room.fxml", 500, 400);
+                    App.setRoot("Room.fxml", 500, 400);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

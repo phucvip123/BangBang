@@ -1,4 +1,4 @@
-package com.shot_tank;
+package com.shoot_tank.client;
 
 
 import java.io.InputStream;

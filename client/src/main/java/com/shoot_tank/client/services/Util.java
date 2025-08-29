@@ -1,4 +1,5 @@
-package com.shot_tank.services;
+package com.shoot_tank.client.services;
+
 
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -17,7 +18,6 @@ public class Util {
         double closestX = clamp(cx, rx, rx + width);
         double closestY = clamp(cy, ry, ry + height);
 
-        // Tính khoảng cách từ tâm circle đến điểm gần nhất
         double distanceX = cx - closestX;
         double distanceY = cy - closestY;
         double distanceSquared = distanceX * distanceX + distanceY * distanceY;

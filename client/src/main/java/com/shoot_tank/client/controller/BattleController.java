@@ -1,4 +1,5 @@
-package com.shot_tank.controller;
+package com.shoot_tank.client.controller;
+
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,10 +12,11 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import com.shot_tank.models.Player;
-import com.shot_tank.models.Tank;
-import com.shot_tank.services.Service;
-import com.shot_tank.services.Util;
+import com.shoot_tank.client.App;
+import com.shoot_tank.client.models.Player;
+import com.shoot_tank.client.models.Tank;
+import com.shoot_tank.client.services.Service;
+import com.shoot_tank.client.services.Util;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -48,6 +50,7 @@ public class BattleController implements Initializable {
     private long lastTime = 0;
     private int frames = 0;
     private double fps = 0;
+    private boolean isEnd = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -107,6 +110,9 @@ public class BattleController implements Initializable {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                if (isEnd)
+                    return;
+                isEnd = checkWin();
                 // do fps
                 if (lastTime > 0) {
                     frames++;
@@ -120,7 +126,7 @@ public class BattleController implements Initializable {
                     lastTime = now;
                 }
                 // ============================
-                double deltaTime =( now - lastUpdateTime)/1e9;
+                double deltaTime = (now - lastUpdateTime) / 1e9;
                 lastUpdateTime = now;
 
                 moveTank(deltaTime);
@@ -212,18 +218,64 @@ public class BattleController implements Initializable {
             bullet.setTranslateX(bullet.getTranslateX() + velocity[0] * deltaTime);
             bullet.setTranslateY(bullet.getTranslateY() + velocity[1] * deltaTime);
             boolean colision = false;
-            for(Entry<String, Player> entry : BattleController.playerMap.entrySet()){
+            for (Entry<String, Player> entry : BattleController.playerMap.entrySet()) {
                 Player p = entry.getValue();
-                if(Util.checkCircleRectangleCollision(bullet, p.tank.getBody())){
+                if (Util.checkCircleRectangleCollision(bullet, p.tank.getBody())) {
                     colision = true;
                     break;
                 }
             }
-            if (colision ||bullet.getTranslateX() < 0 || bullet.getTranslateX() > MAP_WIDTH
+            if (colision || bullet.getTranslateX() < 0 || bullet.getTranslateX() > MAP_WIDTH
                     || bullet.getTranslateY() < 0 || bullet.getTranslateY() > MAP_HEIGHT) {
                 gamePane.getChildren().remove(bullet);
                 iter.remove();
             }
         }
+    }
+
+    public boolean checkWin() {
+        if (Player.myChar().hp <= 0) {
+            Player.myChar().isBattle = false;
+            Player.myChar().tank = null;
+            Player.myChar().isReady = false;
+            Service.gI().sendReady(false);
+            Platform.runLater(() -> {
+                bullets.clear();
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION);
+                alert.setTitle("Bạn đã thua!");
+                alert.setHeaderText(null);
+                alert.setContentText("Bạn đã bị hạ gục! Đang trở về phòng...");
+                alert.showAndWait();
+                try {
+
+                    App.setRoot("Room.fxml", 650, 250);
+                } catch (Exception ex) {
+                }
+
+            });
+            return true;
+        } else if (playerMap.size() == 0) {
+            Player.myChar().isBattle = false;
+            Player.myChar().tank = null;
+            Player.myChar().isReady = false;
+            Service.gI().sendReady(false);
+            bullets.clear();
+            Platform.runLater(() -> {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION);
+                alert.setTitle("Chiến thắng!");
+                alert.setHeaderText(null);
+                alert.setContentText("Bạn đã thắng! Đang trở về phòng...");
+                alert.showAndWait();
+                try {
+
+                    App.setRoot("Room.fxml", 650, 250);
+                } catch (Exception e) {
+                }
+            });
+            return true;
+        }
+        return false;
     }
 }

@@ -89,8 +89,11 @@ public class Player {
 
     public int injured(int damage) {
         this.hp -= damage;
-        if (this.hp < 0)
+        if (this.hp < 0){
             this.hp = 0;
+            isBattle = false;
+            Service.gI().sendPlayerDie(this);
+        }
         return damage;
     }
 
@@ -101,15 +104,16 @@ public class Player {
 
     public void leaveRoom() {
         if (room != null) {
-            room.players.remove(this);
-            if (room.players.isEmpty()) {
-                GameServer.rooms.remove(room);
-            } else {
-                room.owner = room.players.get(0);
+            Room r = this.room;
+            r.players.remove(this);
+            if (r.players.isEmpty()) {
+                GameServer.rooms.remove(r);
+            } else if (r.owner == this) {
+                r.owner = r.players.get(0);
             }
+            Service.gI().sendRoom(this);
             this.room = null;
         }
-        Service.gI().sendRoom(this);
     }
 
 }

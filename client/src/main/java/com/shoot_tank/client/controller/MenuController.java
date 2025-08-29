@@ -1,11 +1,12 @@
-package com.shot_tank.controller;
+package com.shoot_tank.client.controller;
+
 
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import com.shot_tank.models.Player;
-import com.shot_tank.services.Service;
+import com.shoot_tank.client.models.Player;
+import com.shoot_tank.client.services.Service;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,14 +14,11 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 

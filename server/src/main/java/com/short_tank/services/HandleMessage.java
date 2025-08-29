@@ -99,6 +99,7 @@ public class HandleMessage {
             return;
         }
         for (Player p : player.room.players) {
+            p.hp = p.hpMax;
             p.battle();
         }
         Service.gI().sendStartGame(player);
