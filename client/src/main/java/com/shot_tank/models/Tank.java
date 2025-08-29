@@ -3,9 +3,13 @@ package com.shot_tank.models;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.shot_tank.controller.BattleController;
+import com.shot_tank.services.Util;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -16,6 +20,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class Tank {
     // Image barrelImage = new
@@ -33,15 +38,15 @@ public class Tank {
     private List<Circle> bullets = new ArrayList<>();
     private final Pane parent;
     public Player player;
+
     public Tank(Pane parent, Player player) {
         this.player = player;
         player.tank = this;
         body = new Rectangle(player.size, player.size);
         body.setFill(new LinearGradient(
-            0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-            new Stop(0, Color.web("#43cea2")),
-            new Stop(1, Color.web("#185a9d"))
-        ));
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.web("#43cea2")),
+                new Stop(1, Color.web("#185a9d"))));
         body.setArcWidth(player.size * 0.4);
         body.setArcHeight(player.size * 0.4);
         body.setStroke(Color.WHITE);
@@ -52,10 +57,9 @@ public class Tank {
 
         barrel = new Rectangle(player.size * 0.25, player.size * 0.75);
         barrel.setFill(new LinearGradient(
-            0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-            new Stop(0, Color.web("#f7971e")),
-            new Stop(1, Color.web("#ffd200"))
-        ));
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.web("#f7971e")),
+                new Stop(1, Color.web("#ffd200"))));
         barrel.setArcWidth(player.size * 0.15);
         barrel.setArcHeight(player.size * 0.15);
         barrel.setStroke(Color.DARKGRAY);
@@ -65,7 +69,8 @@ public class Tank {
         barrel.setEffect(new DropShadow(5, Color.GRAY));
 
         nameLabel = new Label(player.name);
-        nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 1);");
+        nameLabel.setStyle(
+                "-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 1);");
         nameLabel.setTranslateX(player.location.x + player.size / 2 - 20);
         nameLabel.setTranslateY(player.location.y - 30);
 
@@ -92,31 +97,72 @@ public class Tank {
             bullet.setTranslateX(startX);
             bullet.setTranslateY(startY);
 
-            bullet.setUserData(new double[] { dx , dy });
+            bullet.setUserData(new double[] { dx, dy });
             bullets.add(bullet);
 
             parent.getChildren().add(bullet);
         });
     }
-    private void updateBullets() {
+
+    private void updateBullets(double deltaTime) {
         Iterator<Circle> iter = bullets.iterator();
         while (iter.hasNext()) {
             Circle bullet = iter.next();
             double[] velocity = (double[]) bullet.getUserData();
-            bullet.setTranslateX(bullet.getTranslateX() + velocity[0]);
-            bullet.setTranslateY(bullet.getTranslateY() + velocity[1]);
+            bullet.setTranslateX(bullet.getTranslateX() + velocity[0] * deltaTime);
+            bullet.setTranslateY(bullet.getTranslateY() + velocity[1] * deltaTime);
 
-            if (bullet.getTranslateX() < 0 || bullet.getTranslateX() > BattleController.MAP_WIDTH
+            boolean colision = false;
+            if (Util.checkCircleRectangleCollision(bullet, Player.myChar().tank.getBody())) {
+                colision = true;
+            }
+            for (Entry<String, Player> entry : BattleController.playerMap.entrySet()) {
+                Player p = entry.getValue();
+                if (p == this.player)
+                    continue;
+                if (Util.checkCircleRectangleCollision(bullet, p.tank.getBody())) {
+                    colision = true;
+                    break;
+                }
+            }
+            if (colision || bullet.getTranslateX() < 0 || bullet.getTranslateX() > BattleController.MAP_WIDTH
                     || bullet.getTranslateY() < 0 || bullet.getTranslateY() > BattleController.MAP_HEIGHT) {
                 parent.getChildren().remove(bullet);
                 iter.remove();
             }
         }
     }
-    public void updateHealth(int newHp) {
-        this.player.hp = newHp;
+
+    public void showFlyText(int damage) {
+        if (damage <= 0)
+            return;
+        Label flyText = new Label("-" + damage);
+        flyText.setStyle(
+                "-fx-text-fill: #ff4444; -fx-font-size: 18px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 1);");
+        flyText.setTranslateX(player.location.x + player.size / 2 - 12);
+        flyText.setTranslateY(player.location.y - 40);
+
+        parent.getChildren().add(flyText);
+
+        TranslateTransition tt = new TranslateTransition(Duration.millis(700), flyText);
+        tt.setByY(-30);
+
+        FadeTransition ft = new FadeTransition(Duration.millis(700), flyText);
+        ft.setFromValue(1.0);
+        ft.setToValue(0.0);
+
+        tt.play();
+        ft.play();
+
+        ft.setOnFinished(e -> parent.getChildren().remove(flyText));
+    }
+
+    public void updateHealth(int damage) {
         double healthRatio = Math.max(0, Math.min(1.0, player.hp / (double) player.hpMax));
         healthBar.setWidth(player.size * healthRatio);
+        if (damage > 0) {
+            showFlyText(damage);
+        }
     }
 
     public Rectangle getBody() {
@@ -128,8 +174,8 @@ public class Tank {
     }
 
     public void setPosition(double x, double y) {
-        double dx = x - this.player.location.x;
-        double dy = y - this.player.location.y;
+        double dx = x - getBody().getTranslateX();
+        double dy = y - getBody().getTranslateY();
 
         double angle = Math.toDegrees(Math.atan2(dy, dx));
         body.setRotate(angle);
@@ -176,9 +222,17 @@ public class Tank {
         return barrel.getRotate();
     }
 
-    public void paint(){
+    public void paint(double deltaTime) {
         setPosition(player.location.x, player.location.y);
         rotateBarrel(player.location.angle);
-        updateBullets();
+        updateBullets(deltaTime);
+        updateHP();
+    }
+
+    public void updateHP() {
+        if (player.injured > 0) {
+            updateHealth(player.injured);
+            player.injured = 0;
+        }
     }
 }

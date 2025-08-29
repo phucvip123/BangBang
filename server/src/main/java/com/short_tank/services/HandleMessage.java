@@ -1,6 +1,7 @@
 package com.short_tank.services;
 
 import com.short_tank.ConfigLoader;
+import com.short_tank.models.Bullet;
 import com.short_tank.models.Player;
 import com.short_tank.models.Room;
 import com.short_tank.server.GameServer;
@@ -97,6 +98,9 @@ public class HandleMessage {
                     "Tất cả thành viên trong phòng phải sẵn sàng!");
             return;
         }
+        for (Player p : player.room.players) {
+            p.battle();
+        }
         Service.gI().sendStartGame(player);
     }
 
@@ -124,6 +128,12 @@ public class HandleMessage {
         double length = Math.sqrt(dx * dx + dy * dy);
         double vx = dx / length * ConfigLoader.gI().getBulletSpeed();
         double vy = dy / length * ConfigLoader.gI().getBulletSpeed();
+        
+        Bullet bullet = new Bullet(player.location.x, player.location.y);
+        bullet.dx = vx;
+        bullet.dy = vy;
+        player.bullets.add(bullet);
+
         Service.gI().sendPlayerShoot(player, new double[] { vx, vy });
 
     }

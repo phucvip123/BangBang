@@ -14,6 +14,8 @@ import com.short_tank.network.Session;
 
 
 public class GameServer extends Thread {
+    public static final int WIDTH = 1600;
+    public static final int HEIGHT = 1600;
     public static List<Room> rooms = new ArrayList<>();
     public static List<Player> players = new ArrayList<>();
     private final String host;

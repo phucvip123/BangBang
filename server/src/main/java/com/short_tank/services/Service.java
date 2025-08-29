@@ -193,4 +193,17 @@ public class Service {
         } catch (Exception e) {
         }
     }
+    public void sendPlayerInjured(Player player, int damage) {
+        try {
+            Message msg = new Message((byte) 10);
+            msg.writeUTF(player.id);
+            msg.writeInt(damage);
+            msg.writeInt(player.hp);
+            for (Player p : player.room.players) {
+                p.session.sendMessage(msg);
+            }
+            msg.close();
+        } catch (Exception e) {
+        }
+    }
 }

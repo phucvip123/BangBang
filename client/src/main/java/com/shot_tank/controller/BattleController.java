@@ -7,12 +7,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.shot_tank.models.Player;
 import com.shot_tank.models.Tank;
 import com.shot_tank.services.Service;
+import com.shot_tank.services.Util;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -41,6 +43,7 @@ public class BattleController implements Initializable {
     private final Set<KeyCode> keysPressed = new HashSet<>();
     private final List<Circle> bullets = new ArrayList<>();
     private double mouseX, mouseY;
+    private long lastUpdateTime = System.currentTimeMillis();
     // đo fps
     private long lastTime = 0;
     private int frames = 0;
@@ -117,7 +120,11 @@ public class BattleController implements Initializable {
                     lastTime = now;
                 }
                 // ============================
-                moveTank();
+                double deltaTime =( now - lastUpdateTime)/1e9;
+                lastUpdateTime = now;
+
+                moveTank(deltaTime);
+                playerTank.updateHP();
                 double angle = playerTank.rotateBarrel(mouseX, mouseY);
                 if (Math.abs(angle - playerTank.player.location.angle) > 1) {
                     Service.gI().sendAngle(angle);
@@ -125,11 +132,9 @@ public class BattleController implements Initializable {
                 }
                 for (java.util.Map.Entry<String, Player> entry : playerMap.entrySet()) {
                     Player player = entry.getValue();
-                    player.tank.paint();
-                    // System.out.println("Player " + player.name + " is at (" + player.location.x +
-                    // ", " + player.location.y + ")");
+                    player.tank.paint(deltaTime);
                 }
-                updateBullets();
+                updateBullets(deltaTime);
                 updateCamera();
             }
         };
@@ -153,20 +158,20 @@ public class BattleController implements Initializable {
         gamePane.setTranslateY(offsetY);
     }
 
-    private void moveTank() {
+    private void moveTank(double deltaTime) {
         double dx = 0, dy = 0;
-
+        double speed = Player.myChar().speed * deltaTime;
         if (keysPressed.contains(KeyCode.W)) {
-            dy -= 3;
+            dy -= speed;
         }
         if (keysPressed.contains(KeyCode.S)) {
-            dy += 3;
+            dy += speed;
         }
         if (keysPressed.contains(KeyCode.A)) {
-            dx -= 3;
+            dx -= speed;
         }
         if (keysPressed.contains(KeyCode.D)) {
-            dx += 3;
+            dx += speed;
         }
 
         double newX = playerTank.getBody().getTranslateX() + dx;
@@ -188,26 +193,33 @@ public class BattleController implements Initializable {
         double centerY = playerTank.getCenterY();
         bullet.setTranslateX(centerX);
         bullet.setTranslateY(centerY);
-
         double dx = mouseX - centerX;
         double dy = mouseY - centerY;
+        double bulletSpeed = 250;
         Service.gI().sendShoot(dx, dy);
         double length = Math.sqrt(dx * dx + dy * dy);
-        bullet.setUserData(new double[] { dx / length * 5, dy / length * 5 });
+        bullet.setUserData(new double[] { dx * bulletSpeed / length, dy * bulletSpeed / length });
 
         bullets.add(bullet);
         gamePane.getChildren().add(bullet);
     }
 
-    private void updateBullets() {
+    private void updateBullets(double deltaTime) {
         Iterator<Circle> iter = bullets.iterator();
         while (iter.hasNext()) {
             Circle bullet = iter.next();
             double[] velocity = (double[]) bullet.getUserData();
-            bullet.setTranslateX(bullet.getTranslateX() + velocity[0]);
-            bullet.setTranslateY(bullet.getTranslateY() + velocity[1]);
-
-            if (bullet.getTranslateX() < 0 || bullet.getTranslateX() > MAP_WIDTH
+            bullet.setTranslateX(bullet.getTranslateX() + velocity[0] * deltaTime);
+            bullet.setTranslateY(bullet.getTranslateY() + velocity[1] * deltaTime);
+            boolean colision = false;
+            for(Entry<String, Player> entry : BattleController.playerMap.entrySet()){
+                Player p = entry.getValue();
+                if(Util.checkCircleRectangleCollision(bullet, p.tank.getBody())){
+                    colision = true;
+                    break;
+                }
+            }
+            if (colision ||bullet.getTranslateX() < 0 || bullet.getTranslateX() > MAP_WIDTH
                     || bullet.getTranslateY() < 0 || bullet.getTranslateY() > MAP_HEIGHT) {
                 gamePane.getChildren().remove(bullet);
                 iter.remove();

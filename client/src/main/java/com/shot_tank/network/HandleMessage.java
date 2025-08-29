@@ -191,6 +191,19 @@ public class HandleMessage {
                         pl.tank.addBullets(x, y, dx, dy);
                     }
                     break;
+                case 10:
+                    id = msg.readUTF();
+                    int injured = msg.readInt();
+                    int hp = msg.readInt();
+                    pl = BattleController.playerMap.get(id);
+                    if (id.equals(Player.myChar().id)) {
+                        Player.myChar().injured += injured;
+                        Player.myChar().hp = hp;
+                    } else if (pl != null) {
+                        pl.injured += injured;
+                        pl.hp = hp;
+                    }
+                    break;
                 default:
                     throw new AssertionError();
             }

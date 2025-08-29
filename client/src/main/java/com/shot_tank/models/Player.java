@@ -21,6 +21,7 @@ public class Player {
     public boolean isReady;
     public List<Bullet> bullets = new ArrayList<>();
     public Tank tank;
+    public int injured = 0;
     public Player(){
         this.location = new Location(0, 0, 0);
     }
