@@ -9,7 +9,7 @@ Bang Bang là dự án game bắn tank nhiều người chơi, gồm hai phần:
 ```
 Bang_bang/
 ├── client/
-│   ├── src/main/java/com/shot_tank/
+│   ├── src/main/java/com/shoot_tank/client/
 │   ├── src/main/resources/
 │   ├── pom.xml
 │   └── ...
@@ -32,6 +32,8 @@ Bang_bang/
 
 ### 1. Build server
 
+Mở terminal và chạy các lệnh sau:
+
 ```sh
 cd server
 mvn clean package
@@ -47,7 +49,7 @@ java -cp server-1.0-SNAPSHOT.jar com.short_tank.App
 ### 3. Build client
 
 ```sh
-cd ../client
+cd ../../client
 mvn clean package
 ```
 
@@ -105,16 +107,10 @@ Nguyễn Văn Phúc
 
 ---
 
-## License
-
-MIT License
-
----
-
 ## Liên hệ
 
 Nếu có vấn đề hoặc góp ý, vui lòng liên hệ qua email hoặc tạo issue trên repository.
 
 ---
 
-**Chúc bạn chơi game
+**Chúc bạn chơi game vui vẻ
