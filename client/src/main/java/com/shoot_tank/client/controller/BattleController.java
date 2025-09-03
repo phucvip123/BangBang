@@ -42,8 +42,15 @@ public class BattleController implements Initializable {
     public static final double MAP_WIDTH = 1600;
     public static final double MAP_HEIGHT = 1600;
 
+    // vẽ minimap
+    private Circle myDot;
+    private final Map<String, Circle> playerDots = new HashMap<>();
+
     @FXML
     private Pane gamePane;
+
+    @FXML
+    private Pane minimapPane;
 
     private Tank playerTank;
     private Rectangle mapBorder;
@@ -109,6 +116,7 @@ public class BattleController implements Initializable {
                 shoot();
             }
         });
+        initMinimap();
 
         Platform.runLater(() -> gamePane.requestFocus());
 
@@ -147,9 +155,34 @@ public class BattleController implements Initializable {
                 }
                 updateBullets(deltaTime);
                 updateCamera();
+                updateMinimap();
             }
         };
         timer.start();
+    }
+
+    private void initMinimap() {
+        int sizeMap = 120;
+        minimapPane.setPrefWidth(sizeMap);
+        minimapPane.setPrefHeight(sizeMap);
+
+        double w = minimapPane.getPrefWidth();
+        double h = minimapPane.getPrefHeight();
+
+        Rectangle border = new Rectangle(0, 0, w, h);
+        border.setStroke(Color.WHITE);
+        border.setFill(Color.TRANSPARENT);
+        border.setStrokeWidth(2);
+        minimapPane.getChildren().add(border);
+
+        myDot = new Circle(6, Color.LIME);
+        minimapPane.getChildren().add(myDot);
+
+        for (Map.Entry<String, Player> entry : playerMap.entrySet()) {
+            Circle dot = new Circle(5, Color.RED);
+            playerDots.put(entry.getKey(), dot);
+            minimapPane.getChildren().add(dot);
+        }
     }
 
     private void updateCamera() {
@@ -304,5 +337,29 @@ public class BattleController implements Initializable {
 
         javafx.scene.effect.Glow glow = new javafx.scene.effect.Glow(0.7);
         btn.setEffect(glow);
+    }
+
+    private void updateMinimap() {
+        double scaleX = minimapPane.getPrefWidth() / MAP_WIDTH;
+        double scaleY = minimapPane.getPrefHeight() / MAP_HEIGHT;
+
+        myDot.setCenterX(playerTank.getBody().getTranslateX() * scaleX);
+        myDot.setCenterY(playerTank.getBody().getTranslateY() * scaleY);
+
+        for (Map.Entry<String, Player> entry : playerMap.entrySet()) {
+            Player p = entry.getValue();
+            Circle dot = playerDots.get(entry.getKey());
+            if (dot == null)
+                continue;
+
+            if (p.tank != null && p.hp > 0) {
+                dot.setVisible(true);
+                dot.setCenterX(p.tank.getBody().getTranslateX() * scaleX);
+                dot.setCenterY(p.tank.getBody().getTranslateY() * scaleY);
+            } else {
+                dot.setFill(Color.DARKGRAY);
+                dot.setVisible(true);
+            }
+        }
     }
 }

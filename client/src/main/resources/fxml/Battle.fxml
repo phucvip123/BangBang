@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<Pane fx:id="gamePane"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.shoot_tank.client.controller.BattleController"
-      prefWidth="800" prefHeight="600"
-      style="-fx-background-color: black;">
-</Pane>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.shoot_tank.client.controller.BattleController">
+
+    <!-- Game pane chiếm toàn bộ màn hình -->
+    <Pane fx:id="gamePane"
+          style="-fx-background-color: black;"
+          AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" />
+
+    <!-- Minimap ở góc trên bên phải -->
+    <Pane fx:id="minimapPane"
+          style="-fx-background-color: black; -fx-border-color: white; -fx-border-width: 2;"
+          AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10" />
+</AnchorPane>
