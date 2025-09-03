@@ -112,7 +112,7 @@ public class Tank {
             double[] velocity = (double[]) bullet.getUserData();
             bullet.setTranslateX(bullet.getTranslateX() + velocity[0] * deltaTime);
             bullet.setTranslateY(bullet.getTranslateY() + velocity[1] * deltaTime);
-
+            if(Player.myChar().tank == null) return;
             boolean colision = false;
             if (Util.checkCircleRectangleCollision(bullet, Player.myChar().tank.getBody())) {
                 colision = true;

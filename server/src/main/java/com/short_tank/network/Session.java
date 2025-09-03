@@ -12,6 +12,7 @@ import com.short_tank.message.Message;
 import com.short_tank.models.Player;
 import com.short_tank.server.Controller;
 import com.short_tank.server.GameServer;
+import com.short_tank.services.Service;
 
 public class Session extends Thread {
     private final Socket socket;
@@ -91,6 +92,7 @@ public class Session extends Thread {
     public void stopHandler() {
         running = false;
         try {
+            Service.gI().sendPlayerDie(this.player);
             socket.close();
         } catch (IOException ignored) {
             System.out.println("Client disconnected!");

@@ -70,7 +70,6 @@ public class Player {
                     if (p != this && Util.checkPlayerCollision(p, b.x, b.y)) {
                         colision = true;
                         int damage = p.injured(10);
-                        System.out.println("Player " + p.name + " injured for " + damage + " damage.");
                         Service.gI().sendPlayerInjured(p, damage);
                         break;
                     }

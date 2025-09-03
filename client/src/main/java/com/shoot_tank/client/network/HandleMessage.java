@@ -11,6 +11,7 @@ import com.shoot_tank.client.controller.ListRoomController;
 import com.shoot_tank.client.message.Message;
 import com.shoot_tank.client.models.Player;
 import com.shoot_tank.client.models.Room;
+import com.shoot_tank.client.services.Util;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -37,17 +38,7 @@ public class HandleMessage {
                 case -1:
                     String title = msg.readUTF();
                     String message = msg.readUTF();
-
-                    Platform.runLater(() -> {
-                        try {
-                            Alert alert = new Alert(AlertType.WARNING);
-                            alert.setTitle(title);
-                            alert.setHeaderText(null);
-                            alert.setContentText(message);
-                            alert.showAndWait();
-                        } catch (Exception e) {
-                        }
-                    });
+                    Util.showNotification(title, message);
 
                     break;
                 case 0:

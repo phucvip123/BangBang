@@ -3,6 +3,7 @@ package com.shoot_tank.client.controller;
 
 import com.shoot_tank.client.network.Session;
 import com.shoot_tank.client.services.Service;
+import com.shoot_tank.client.services.Util;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -29,14 +30,13 @@ public class CharacterController {
         try {
             Session.mySession = new Session();
             Session.mySession.start();
+            Service.gI().sendCreatePlayer(name);
+
         } catch (Exception e) {
             e.printStackTrace();
+            Util.showNotification("Lỗi", "Không thể kết nối đến máy chủ!");
+
         }
 
-        try {
-            Service.gI().sendCreatePlayer(name);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

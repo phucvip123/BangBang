@@ -1,14 +1,20 @@
 package com.shoot_tank.client.network;
 
-
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.shoot_tank.client.App;
 import com.shoot_tank.client.ConfigLoader;
 import com.shoot_tank.client.message.Message;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 import java.io.*;
+
+import com.shoot_tank.client.services.Util;
 
 public class Session extends Thread {
     public static Session mySession;
@@ -43,6 +49,7 @@ public class Session extends Thread {
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                Util.showNotification("Mất Kết Nối", "Mất kết nối với máy chủ!");
             } catch (IOException e) {
                 if (running)
                     e.printStackTrace();
@@ -67,16 +74,20 @@ public class Session extends Thread {
                 msg.close();
             }
         } catch (IOException e) {
-            
+
         } finally {
             stopHandler();
         }
     }
+
     public void shutdown() {
-    if (socket != null && !socket.isClosed()) {
-        try { socket.close(); } catch (Exception e) { }
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+            } catch (Exception e) {
+            }
+        }
     }
-}
 
     public void sendMessage(Message msg) {
         try {

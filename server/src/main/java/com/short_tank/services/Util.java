@@ -8,8 +8,8 @@ public class Util {
         double cy = y;
         double r = 5;
 
-        double rx = player.location.x;
-        double ry = player.location.y;
+        double rx = player.location.x - player.size / 2;
+        double ry = player.location.y - player.size / 2;
         double width = player.size;
         double height = player.size;
         double closestX = clamp(cx, rx, rx + width);
@@ -21,8 +21,8 @@ public class Util {
 
         return distanceSquared < r * r;
     }
+
     private static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(value, max));
     }
 }
-

@@ -1,6 +1,8 @@
 package com.shoot_tank.client.services;
 
-
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
@@ -24,7 +26,21 @@ public class Util {
 
         return distanceSquared < r * r;
     }
+
     private static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(value, max));
+    }
+
+    public static void showNotification(String title, String message) {
+        Platform.runLater(() -> {
+            try {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle(title);
+                alert.setHeaderText(null);
+                alert.setContentText(message);
+                alert.showAndWait();
+            } catch (Exception e) {
+            }
+        });
     }
 }
