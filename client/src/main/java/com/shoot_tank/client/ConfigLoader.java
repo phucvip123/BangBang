@@ -32,5 +32,9 @@ public class ConfigLoader {
     public int getPort() {
         return Integer.parseInt(properties.getProperty("port"));
     }
+    public double getBulletSpeed() {
+        return Double.parseDouble(properties.getProperty("bullet_speed"));
+    }
+
 
 }

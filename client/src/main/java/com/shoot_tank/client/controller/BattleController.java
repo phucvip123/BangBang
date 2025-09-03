@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.shoot_tank.client.App;
+import com.shoot_tank.client.ConfigLoader;
 import com.shoot_tank.client.models.Player;
 import com.shoot_tank.client.models.Tank;
 import com.shoot_tank.client.services.Service;
@@ -239,7 +240,7 @@ public class BattleController implements Initializable {
         bullet.setTranslateY(centerY);
         double dx = mouseX - centerX;
         double dy = mouseY - centerY;
-        double bulletSpeed = 250;
+        double bulletSpeed = ConfigLoader.getInstance().getBulletSpeed();
         Service.gI().sendShoot(dx, dy);
         double length = Math.sqrt(dx * dx + dy * dy);
         bullet.setUserData(new double[] { dx * bulletSpeed / length, dy * bulletSpeed / length });

@@ -50,6 +50,13 @@ public class Session extends Thread {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 Util.showNotification("Mất Kết Nối", "Mất kết nối với máy chủ!");
+                Platform.runLater(() -> {
+                    try {
+                        App.setRoot("Character.fxml", 800, 600);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
             } catch (IOException e) {
                 if (running)
                     e.printStackTrace();
