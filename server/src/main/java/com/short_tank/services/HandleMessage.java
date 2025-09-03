@@ -100,6 +100,8 @@ public class HandleMessage {
         }
         for (Player p : player.room.players) {
             p.hp = p.hpMax;
+            p.location.x = Math.random() * (GameServer.WIDTH - 100) + 50;
+            p.location.y = Math.random() * (GameServer.HEIGHT - 100) + 50;
             p.battle();
         }
         Service.gI().sendStartGame(player);

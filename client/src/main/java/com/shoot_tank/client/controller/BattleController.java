@@ -1,6 +1,5 @@
 package com.shoot_tank.client.controller;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,18 +18,24 @@ import com.shoot_tank.client.services.Service;
 import com.shoot_tank.client.services.Util;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class BattleController implements Initializable {
     public static Map<String, Player> playerMap = new HashMap<>();
@@ -54,14 +59,15 @@ public class BattleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Player.myChar().isBattle = true;
         Rectangle mapBackground = new Rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT);
         mapBackground.setFill(new LinearGradient(
                 0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.web("#2c3e50")),
                 new Stop(1, Color.web("#27ae60"))));
         gamePane.getChildren().add(mapBackground);
-        int cellSize = 80; 
-        Color lineColor = Color.rgb(255, 255, 255, 0.12); 
+        int cellSize = 80;
+        Color lineColor = Color.rgb(255, 255, 255, 0.12);
         for (int x = 0; x <= MAP_WIDTH; x += cellSize) {
             javafx.scene.shape.Line line = new javafx.scene.shape.Line(x, 0, x, MAP_HEIGHT);
             line.setStroke(lineColor);
@@ -115,7 +121,7 @@ public class BattleController implements Initializable {
                 // do fps
                 if (lastTime > 0) {
                     frames++;
-                    if (now - lastTime >= 1_000_000_000) { 
+                    if (now - lastTime >= 1_000_000_000) {
                         fps = frames;
                         frames = 0;
                         lastTime = now;
@@ -234,47 +240,69 @@ public class BattleController implements Initializable {
 
     public boolean checkWin() {
         if (Player.myChar().hp <= 0) {
-            Player.myChar().isBattle = false;
             Player.myChar().tank = null;
             Player.myChar().isReady = false;
             Service.gI().sendReady(false);
             Platform.runLater(() -> {
                 bullets.clear();
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                        javafx.scene.control.Alert.AlertType.INFORMATION);
-                alert.setTitle("Bạn đã thua!");
-                alert.setHeaderText(null);
-                alert.setContentText("Bạn đã bị hạ gục! Đang trở về phòng...");
-                alert.showAndWait();
-                try {
-
-                    App.setRoot("Room.fxml", 650, 250);
-                } catch (Exception ex) {
-                }
-
+                showEndEffect("Bạn đã thua!\nBạn đã bị hạ gục!");
             });
             return true;
-        } else if (playerMap.size() == 0) {
-            Player.myChar().isBattle = false;
+        } else if (playerMap.isEmpty()) {
             Player.myChar().tank = null;
             Player.myChar().isReady = false;
             Service.gI().sendReady(false);
             bullets.clear();
             Platform.runLater(() -> {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                        javafx.scene.control.Alert.AlertType.INFORMATION);
-                alert.setTitle("Chiến thắng!");
-                alert.setHeaderText(null);
-                alert.setContentText("Bạn đã thắng! Đang trở về phòng...");
-                alert.showAndWait();
-                try {
-
-                    App.setRoot("Room.fxml", 650, 250);
-                } catch (Exception e) {
-                }
+                showEndEffect("Chiến thắng!\nBạn đã thắng!");
             });
             return true;
         }
         return false;
+    }
+
+    private void showEndEffect(String message) {
+        gamePane.setTranslateX(0);
+        gamePane.setTranslateY(0);
+        StackPane overlay = new StackPane();
+        overlay.setPrefSize(gamePane.getWidth(), gamePane.getHeight());
+        overlay.setStyle("-fx-background-color: rgba(44, 62, 80, 0.85);");
+
+        Label label = new Label(message);
+        label.setStyle("-fx-font-size: 36px; -fx-text-fill: #fff; -fx-font-weight: bold;");
+
+        Button btn = new Button("Về phòng");
+        btn.setStyle(
+                "-fx-font-size: 20px; -fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10 30 10 30; -fx-background-radius: 20;");
+        btn.setOnAction(e -> {
+            try {
+                Player.myChar().isBattle = false;
+                App.setRoot("Room.fxml", 650, 250);
+            } catch (Exception ex) {
+            }
+        });
+
+        VBox vbox = new VBox(30, label, btn);
+        vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+        overlay.getChildren().add(vbox);
+
+        gamePane.getChildren().add(overlay);
+
+        FadeTransition ft = new FadeTransition(Duration.seconds(1.2), overlay);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+
+        javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(Duration.seconds(0.8), label);
+        st.setFromX(0.7);
+        st.setFromY(0.7);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.setCycleCount(1);
+        st.play();
+
+        javafx.scene.effect.Glow glow = new javafx.scene.effect.Glow(0.7);
+        btn.setEffect(glow);
     }
 }

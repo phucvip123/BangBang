@@ -1,6 +1,5 @@
 package com.shoot_tank.client.network;
 
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -110,7 +109,8 @@ public class HandleMessage {
                         } else {
                             Platform.runLater(() -> {
                                 try {
-                                    App.setRoot("Room.fxml", 650, 250);
+                                    if (Player.myChar().isBattle == false)
+                                        App.setRoot("Room.fxml", 650, 250);
                                 } catch (Exception e) {
                                 }
                             });
@@ -229,7 +229,7 @@ public class HandleMessage {
                     id = msg.readUTF();
                     pl = BattleController.playerMap.get(id);
                     if (id.equals(Player.myChar().id)) {
-                        
+
                     } else if (pl != null) {
                         BattleController.playerMap.remove(id);
                     }
